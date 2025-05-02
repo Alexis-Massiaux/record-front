@@ -1,5 +1,13 @@
+.record-table-page {
+  padding: 1%;
+}
 .mat-mdc-form-field {
-  padding-top: 1%;
   font-size: 14px;
   width: 50%;
+}
+
+.category-date-filter {
+  width: 50%;
+  display: flex;
+  gap: 2%;
 }

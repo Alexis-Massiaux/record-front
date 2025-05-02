@@ -4,6 +4,8 @@ import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {provideNativeDateAdapter} from '@angular/material/core';
 
 import {Record} from './record.model'
 
@@ -15,8 +17,9 @@ const RECORDS_DATA: Record[] = [
 
 @Component({
   selector: 'app-record-table',
-  imports: [MatTableModule, MatSortModule, MatInputModule, MatFormFieldModule, MatSelectModule],
+  imports: [MatTableModule, MatSortModule, MatInputModule, MatFormFieldModule, MatSelectModule, MatDatepickerModule],
   templateUrl: './record-table.component.html',
+  providers: [provideNativeDateAdapter()],
   styleUrl: './record-table.component.scss'
 })
 export class RecordTableComponent implements AfterViewInit {
@@ -26,6 +29,7 @@ export class RecordTableComponent implements AfterViewInit {
   categories: string[] = ['categoryTest1', 'categoryTest2' ]
   filterValue: string = '';
   selectedCategory: string | null = null;
+  selectedDate: Date | null = null;
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -44,10 +48,16 @@ export class RecordTableComponent implements AfterViewInit {
     this.filterData();
   }
 
+  onDateChange(event: any) {
+    this.selectedDate = event.value;
+    this.filterData();
+  }
+
   filterData() {
     this.dataSource.filterPredicate = (data: Record) => {
       return this.isLineMatchWithTextFilter(data)
-        && this.isLineMatchWithCategoryFilter(data);
+        && this.isLineMatchWithCategoryFilter(data)
+        && this.isLineMatchWithDateFilter(data);
     };
     this.dataSource.filter = 'filter';
   }
@@ -64,6 +74,17 @@ export class RecordTableComponent implements AfterViewInit {
       data.categories.map(category => category.toLowerCase())
         .includes(this.selectedCategory.toLowerCase())
       : true;
+  }
+
+  isLineMatchWithDateFilter(data: Record) {
+    if (!this.selectedDate) {
+      return true;
+    }
+
+    const selectedDateString = this.selectedDate.toLocaleDateString('fr-FR');
+    const dataDateString = data.date.toLocaleDateString('fr-FR');
+
+    return dataDateString === selectedDateString;
   }
 
 }
