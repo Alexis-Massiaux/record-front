@@ -3,6 +3,18 @@
   <input matInput (keyup)="applyFilter($event)" placeholder="[name, description]">
 </mat-form-field>
 
+<div>
+  <mat-form-field>
+    <mat-label>Category</mat-label>
+    <mat-select (selectionChange)="onCategoryChange($event.value)">
+      <mat-option [value]="null">All</mat-option>
+      @for (category of categories; track category) {
+        <mat-option [value]="category">{{ category }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
 <mat-table [dataSource]="dataSource" matSort>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

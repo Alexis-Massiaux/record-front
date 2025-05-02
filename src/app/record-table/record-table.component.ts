@@ -3,16 +3,19 @@ import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatSelectModule} from '@angular/material/select';
 
 import {Record} from './record.model'
 
 const RECORDS_DATA: Record[] = [
-  {name: 'test', description: 'test desc', categories: ['tabtest', 'tabtest2'], date: new Date()}
+  {name: 'test', description: 'test desc', categories: ['categoryTest1', 'categoryTest2'], date: new Date()},
+  {name: 'tron', description: 'desc tron', categories: ['categoryTest1'], date: new Date()},
+  {name: 'pokemon', description: 'pokemon desc', categories: ['categoryTest2'], date: new Date()}
 ];
 
 @Component({
   selector: 'app-record-table',
-  imports: [MatTableModule, MatSortModule, MatInputModule, MatFormFieldModule],
+  imports: [MatTableModule, MatSortModule, MatInputModule, MatFormFieldModule, MatSelectModule],
   templateUrl: './record-table.component.html',
   styleUrl: './record-table.component.scss'
 })
@@ -20,18 +23,11 @@ export class RecordTableComponent implements AfterViewInit {
 
   dataSource = new MatTableDataSource(RECORDS_DATA);
   displayedColumns: string[] = ['name', 'description', 'categories', 'date'];
+  categories: string[] = ['categoryTest1', 'categoryTest2' ]
+  filterValue: string = '';
+  selectedCategory: string | null = null;
 
   @ViewChild(MatSort) sort!: MatSort;
-
-  ngOnInit() {
-    this.dataSource.filterPredicate = this.customFilterPredicate.bind(this);
-  }
-
-  customFilterPredicate(data: Record, filter: string): boolean {
-    const filterValue = filter.trim().toLowerCase();
-    return data.name.toLowerCase().includes(filterValue) ||
-      data.description.toLowerCase().includes(filterValue);
-  }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
@@ -39,7 +35,35 @@ export class RecordTableComponent implements AfterViewInit {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.filterValue = filterValue.trim().toLowerCase();
+    this.filterData();
+  }
+
+  onCategoryChange(category: string | null) {
+    this.selectedCategory = category;
+    this.filterData();
+  }
+
+  filterData() {
+    this.dataSource.filterPredicate = (data: Record) => {
+      return this.isLineMatchWithTextFilter(data)
+        && this.isLineMatchWithCategoryFilter(data);
+    };
+    this.dataSource.filter = 'filter';
+  }
+
+  isLineMatchWithTextFilter(data: Record) {
+    return this.filterValue ?
+      (data.name.toLowerCase().includes(this.filterValue)
+        || data.description.toLowerCase().includes(this.filterValue))
+      : true;
+  }
+
+  isLineMatchWithCategoryFilter(data: Record) {
+    return this.selectedCategory ?
+      data.categories.map(category => category.toLowerCase())
+        .includes(this.selectedCategory.toLowerCase())
+      : true;
   }
 
 }
