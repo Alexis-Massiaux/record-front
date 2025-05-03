@@ -33,38 +33,22 @@ export class RecordTableComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.recordService.getAllRecords().subscribe(records => this.dataSource.data = records);
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+    this.setFilterPredicateToDataSource()
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.filterValue = filterValue.trim().toLowerCase();
-    this.filterData();
-  }
-
-  onCategoryChange(category: string | null) {
-    this.selectedCategory = category;
-    this.filterData();
-  }
-
-  onDateChange(event: any) {
-    this.selectedDate = event.value;
-    this.filterData();
-  }
-
-  filterData() {
+  setFilterPredicateToDataSource() {
     this.dataSource.filterPredicate = (data: Record) => {
       return this.isLineMatchWithTextFilter(data)
         && this.isLineMatchWithCategoryFilter(data)
         && this.isLineMatchWithDateFilter(data);
     };
-    this.dataSource.filter = 'filter';
   }
 
   isLineMatchWithTextFilter(data: Record) {
@@ -90,6 +74,30 @@ export class RecordTableComponent implements OnInit, AfterViewInit {
     const dataDateString = new Date(data.date).toLocaleDateString('fr-FR');
 
     return dataDateString === selectedDateString;
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.filterValue = filterValue.trim().toLowerCase();
+    this.launchFilterAction();
+  }
+
+  onCategoryChange(category: string | null) {
+    this.selectedCategory = category;
+    this.launchFilterAction();
+  }
+
+  onDateChange(event: any) {
+    this.selectedDate = event.value;
+    this.launchFilterAction();
+  }
+
+  /**
+   * Setting something on the filter variable will launch the filter action
+   * without which nothing happens
+   */
+  launchFilterAction() {
+    this.dataSource.filter = 'filter';
   }
 
 }
