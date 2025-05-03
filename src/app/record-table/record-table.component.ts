@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -12,7 +13,7 @@ import {RecordService} from './services/record.service';
 
 @Component({
   selector: 'app-record-table',
-  imports: [MatTableModule, MatSortModule, MatInputModule, MatFormFieldModule, MatSelectModule, MatDatepickerModule],
+  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatInputModule, MatFormFieldModule, MatSelectModule, MatDatepickerModule],
   templateUrl: './record-table.component.html',
   providers: [provideNativeDateAdapter()],
   styleUrl: './record-table.component.scss'
@@ -29,6 +30,7 @@ export class RecordTableComponent implements OnInit, AfterViewInit {
   constructor(private recordService: RecordService) {
   }
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit(): void {
@@ -37,6 +39,7 @@ export class RecordTableComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
 
   applyFilter(event: Event) {
