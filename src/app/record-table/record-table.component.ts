@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatInputModule} from '@angular/material/input';
@@ -8,12 +8,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {provideNativeDateAdapter} from '@angular/material/core';
 
 import {Record} from './record.model'
-
-const RECORDS_DATA: Record[] = [
-  {name: 'test', description: 'test desc', categories: ['categoryTest1', 'categoryTest2'], date: new Date()},
-  {name: 'tron', description: 'desc tron', categories: ['categoryTest1'], date: new Date()},
-  {name: 'pokemon', description: 'pokemon desc', categories: ['categoryTest2'], date: new Date()}
-];
+import {RecordService} from './services/record.service';
 
 @Component({
   selector: 'app-record-table',
@@ -22,16 +17,23 @@ const RECORDS_DATA: Record[] = [
   providers: [provideNativeDateAdapter()],
   styleUrl: './record-table.component.scss'
 })
-export class RecordTableComponent implements AfterViewInit {
+export class RecordTableComponent implements OnInit, AfterViewInit {
 
-  dataSource = new MatTableDataSource(RECORDS_DATA);
+  dataSource: MatTableDataSource<Record> = new MatTableDataSource();
   displayedColumns: string[] = ['name', 'description', 'categories', 'date'];
   categories: string[] = ['categoryTest1', 'categoryTest2' ]
   filterValue: string = '';
   selectedCategory: string | null = null;
   selectedDate: Date | null = null;
 
+  constructor(private recordService: RecordService) {
+  }
+
   @ViewChild(MatSort) sort!: MatSort;
+
+  ngOnInit(): void {
+    this.recordService.getAllRecords().subscribe(records => this.dataSource.data = records);
+  }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
