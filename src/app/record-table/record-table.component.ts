@@ -43,7 +43,7 @@ export class RecordTableComponent implements OnInit, AfterViewInit {
     this.setFilterPredicateToDataSource()
   }
 
-  setFilterPredicateToDataSource() {
+  private setFilterPredicateToDataSource() {
     this.dataSource.filterPredicate = (data: Record) => {
       return this.isLineMatchWithTextFilter(data)
         && this.isLineMatchWithCategoryFilter(data)
@@ -51,21 +51,21 @@ export class RecordTableComponent implements OnInit, AfterViewInit {
     };
   }
 
-  isLineMatchWithTextFilter(data: Record) {
+  private isLineMatchWithTextFilter(data: Record) {
     return this.filterValue ?
       (data.name.toLowerCase().includes(this.filterValue)
         || data.description.toLowerCase().includes(this.filterValue))
       : true;
   }
 
-  isLineMatchWithCategoryFilter(data: Record) {
+  private isLineMatchWithCategoryFilter(data: Record) {
     return this.selectedCategory ?
       data.categories.map(category => category.toLowerCase())
         .includes(this.selectedCategory.toLowerCase())
       : true;
   }
 
-  isLineMatchWithDateFilter(data: Record) {
+  private isLineMatchWithDateFilter(data: Record) {
     if (!this.selectedDate) {
       return true;
     }
@@ -76,18 +76,18 @@ export class RecordTableComponent implements OnInit, AfterViewInit {
     return dataDateString === selectedDateString;
   }
 
-  applyFilter(event: Event) {
+  protected applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.filterValue = filterValue.trim().toLowerCase();
     this.launchFilterAction();
   }
 
-  onCategoryChange(category: string | null) {
+  protected onCategoryChange(category: string | null) {
     this.selectedCategory = category;
     this.launchFilterAction();
   }
 
-  onDateChange(event: any) {
+  protected onDateChange(event: any) {
     this.selectedDate = event.value;
     this.launchFilterAction();
   }
@@ -96,7 +96,7 @@ export class RecordTableComponent implements OnInit, AfterViewInit {
    * Setting something on the filter variable will launch the filter action
    * without which nothing happens
    */
-  launchFilterAction() {
+  private launchFilterAction() {
     this.dataSource.filter = 'filter';
   }
 
