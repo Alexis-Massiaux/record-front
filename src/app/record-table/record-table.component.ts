@@ -71,9 +71,8 @@ export class RecordTableComponent implements OnInit, AfterViewInit {
     }
 
     const selectedDateString = this.selectedDate.toLocaleDateString('fr-FR');
-    const dataDateString = new Date(data.date).toLocaleDateString('fr-FR');
 
-    return dataDateString === selectedDateString;
+    return data.date === selectedDateString;
   }
 
   protected applyFilter(event: Event) {
